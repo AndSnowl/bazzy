@@ -9,6 +9,12 @@ base-image: ghcr.io/ublue-os/bazzite
 image-version: stable
 
 modules:
+  # Bazzite's Terra Xwayland lacks the arch-qualified provide Hyprland
+  # needs; swap in Fedora's before installing anything.
+  - type: script
+    scripts:
+      - swap-xwayland.sh
+
   - type: dnf
     repos:
       # The COPR exists only inside the build. cleanup drops its repo

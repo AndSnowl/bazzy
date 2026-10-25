@@ -55,6 +55,8 @@ modules:
         - emacs
         - java-25-openjdk-devel
         - mpv
+        # libmpv for from-source hydrus; Fedora's mpv does not link it
+        - mpv-libs
         - syncthing
         - fastfetch
         - onefetch
@@ -72,6 +74,13 @@ modules:
   - type: script
     scripts:
       - fix-bazzite-user-setup.sh
+
+  # Ships files/system/ into /: the uupd drop-ins and the per-user
+  # post-update runner they call.
+  - type: files
+    files:
+      - source: system
+        destination: /
 
   # Bakes cosign.pub and a container policy into the image so
   # rpm-ostree verifies every future update against this repo's key.

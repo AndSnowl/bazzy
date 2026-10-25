@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+# Run each user's ~/.config/uupd/post-update, as that user, after uupd
+# finishes. uupd has no hook of its own; the drop-ins on uupd.service and
+# uupd-manual.service call this. Output goes to the journal, so --json
+# lines show up in `ujust update` like uupd's own.
+while IFS=: read -r user _ uid _ _ home _; do
+  ((uid >= 1000 && uid < 60000)) || continue
+  hook=$home/.config/uupd/post-update
+  [[ -x $hook ]] || continue
+  runuser -u "$user" -- env HOME="$home" USER="$user" "$hook" --json ||
+    printf '{"level":"WARN","title":"post-update","msg":"%s: %s failed"}\n' "$user" "$hook"
+done < <(getent passwd)
